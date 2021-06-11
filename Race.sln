@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31321.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaceClient", "RaceClient\RaceClient.csproj", "{01252367-3B00-4CDE-B649-C563B6C84964}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaceServer", "RaceServer\RaceServer.csproj", "{C508DF2A-3A6C-4DC2-86C0-236C8D0EC15B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{484551D4-78DA-471A-985E-64F4D099E8EC}"
+	ProjectSection(SolutionItems) = preProject
+		fxmanifest.lua = fxmanifest.lua
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ui", "ui", "{F6FDB6FA-3D78-426B-A28B-D1956D2434A4}"
+	ProjectSection(SolutionItems) = preProject
+		ui\editor.html = ui\editor.html
+		ui\assets\js\main.js = ui\assets\js\main.js
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01252367-3B00-4CDE-B649-C563B6C84964}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01252367-3B00-4CDE-B649-C563B6C84964}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01252367-3B00-4CDE-B649-C563B6C84964}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01252367-3B00-4CDE-B649-C563B6C84964}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C508DF2A-3A6C-4DC2-86C0-236C8D0EC15B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C508DF2A-3A6C-4DC2-86C0-236C8D0EC15B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C508DF2A-3A6C-4DC2-86C0-236C8D0EC15B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C508DF2A-3A6C-4DC2-86C0-236C8D0EC15B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F6FDB6FA-3D78-426B-A28B-D1956D2434A4} = {484551D4-78DA-471A-985E-64F4D099E8EC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {33511AC7-AAF3-4D5B-B3EB-7F11D0D75D7A}
+	EndGlobalSection
+EndGlobal
