@@ -14,7 +14,7 @@ namespace RaceClient.models
 			Rotation = new CoordinateRotation();
 			Quaternion = new Quaternion();
 		}
-		public uint Hash { get; set; }
+		public double Hash { get; set; }
 		public bool Door { get; set; }
 		public bool Dynamic { get; set; }
 		public CoordinatePosition Position { get; set; }

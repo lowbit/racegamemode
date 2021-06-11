@@ -100,38 +100,41 @@ namespace RaceServer
         {
             TriggerClientEvent("clientUnloadRace");
         }
-        [EventHandler("serverStreamObjects")]
-        private void OnServerStreamObjects(string resName, bool isStreamed)
-        {
-            TriggerClientEvent("clientStreamObjects", resName, isStreamed);
-        }
+        //[EventHandler("serverStreamObjects")]
+        //private void OnServerStreamObjects(string resName, bool isStreamed)
+        //{
+        //    TriggerClientEvent("clientStreamObjects", resName, isStreamed);
+        //}
         [EventHandler("serverLoadXml")]
-        private void OnServerLoadXml(bool isStreamed)
+        private void OnServerLoadXml(string mapName, bool active)
         {
-            XmlSerializer reader = new XmlSerializer(typeof(Map));
-            StreamReader file = new StreamReader("resources/racegamemode/races/race.xml");
-            Map map = (Map)reader.Deserialize(file);
-            file.Close();
             List<MapClass> mapObjects = new List<MapClass>();
-			foreach (var item in map.Objects)
-			{
-				MapClass mc = new MapClass();
-				mc.Door = item.Door;
-				mc.Dynamic = item.Dynamic;
-				mc.Hash = item.Hash;//Convert.ToInt32(
-				mc.Position.X = (float)item.Position.X;
-				mc.Position.Y = (float)item.Position.Y;
-				mc.Position.Z = (float)item.Position.Z;
-				mc.Rotation.X = item.Rotation.X;
-				mc.Rotation.Y = item.Rotation.Y;
-				mc.Rotation.Z = (float)item.Rotation.Z;
-				mc.Quaternion.X = item.Quaternion.X;
-				mc.Quaternion.Y = item.Quaternion.Y;
-				mc.Quaternion.Z = (float)item.Quaternion.Z;
-				mc.Quaternion.W = item.Quaternion.W;
-				mapObjects.Add(mc);
-			}
-			TriggerClientEvent("clientLoadXml", JsonConvert.SerializeObject(mapObjects), isStreamed);
+            if (!string.IsNullOrWhiteSpace(mapName))
+            {
+                XmlSerializer reader = new XmlSerializer(typeof(Map));
+                StreamReader file = new StreamReader($"resources/racegamemode/races/{mapName}.xml");
+                Map map = (Map)reader.Deserialize(file);
+                file.Close();
+                foreach (var item in map.Objects)
+                {
+                    MapClass mc = new MapClass();
+                    mc.Door = item.Door;
+                    mc.Dynamic = item.Dynamic;
+                    mc.Hash = item.Hash;
+                    mc.Position.X = (float)item.Position.X;
+                    mc.Position.Y = (float)item.Position.Y;
+                    mc.Position.Z = (float)item.Position.Z;
+                    mc.Rotation.X = item.Rotation.X;
+                    mc.Rotation.Y = item.Rotation.Y;
+                    mc.Rotation.Z = (float)item.Rotation.Z;
+                    mc.Quaternion.X = item.Quaternion.X;
+                    mc.Quaternion.Y = item.Quaternion.Y;
+                    mc.Quaternion.Z = (float)item.Quaternion.Z;
+                    mc.Quaternion.W = item.Quaternion.W;
+                    mapObjects.Add(mc);
+                }
+            }
+			TriggerClientEvent("clientLoadXml", JsonConvert.SerializeObject(mapObjects), active);
         }
     }
 }

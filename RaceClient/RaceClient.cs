@@ -36,6 +36,7 @@ namespace RaceClient
 		public List<CheckpointClass> checkpoints = new List<CheckpointClass>();
 		public List<SpawnpointClass> spawnpoints = new List<SpawnpointClass>();
 		public List<int> objs = new List<int>();
+		List<MapClass> mapObjects = new List<MapClass>();
 		public CheckpointConfigClass checkpointConfig = new CheckpointConfigClass();
 		public RaceClient()
 		{
@@ -75,34 +76,31 @@ namespace RaceClient
 			{
 				FreezeEntityPosition(GetVehiclePedIsUsing(Game.PlayerPed.Handle), false);
 			}), false);
-			RegisterCommand("xmlload", new Action<int, List<object>, string>(async (source, args, raw) =>
-			{
-				if (args.Count == 0)
-				{
-					TriggerServerEvent("serverLoadXml", true);
-				}
-			}), false);
-			RegisterCommand("xmlunload", new Action<int, List<object>, string>(async (source, args, raw) =>
-			{
-				if (args.Count == 0)
-				{
-					TriggerServerEvent("serverLoadXml", false);
-				}
-			}), false);
 			RegisterCommand("stream", new Action<int, List<object>, string>(async (source, args, raw) =>
 			{
 				if (args.Count == 1)
 				{
-					TriggerServerEvent("serverStreamObjects", (string)args[0], true);
+					TriggerServerEvent("serverLoadXml", (string)args[0], true);
 				}
 			}), false);
 			RegisterCommand("unstream", new Action<int, List<object>, string>(async (source, args, raw) =>
 			{
-				if (args.Count == 1)
-				{
-					TriggerServerEvent("serverStreamObjects", (string)args[0], false);
-				}
+				TriggerServerEvent("serverLoadXml", "", false);
 			}), false);
+			//RegisterCommand("stream", new Action<int, List<object>, string>(async (source, args, raw) =>
+			//{
+			//	if (args.Count == 1)
+			//	{
+			//		TriggerServerEvent("serverStreamObjects", (string)args[0], true);
+			//	}
+			//}), false);
+			//RegisterCommand("unstream", new Action<int, List<object>, string>(async (source, args, raw) =>
+			//{
+			//	if (args.Count == 1)
+			//	{
+			//		TriggerServerEvent("serverStreamObjects", (string)args[0], false);
+			//	}
+			//}), false);
 			//
 			RegisterCommand("spawnSpawnPoint", new Action<int, List<object>, string>((source, args, raw) =>
 			{
@@ -172,9 +170,11 @@ namespace RaceClient
 					return;
 				}
 				currentRace.Name = "";
-				foreach (var item in args)
+				for (int i = 0; i < args.Count; i++)
 				{
-					currentRace.Name += (string)item + " ";
+					currentRace.Name += (string)args[i];
+					if (i != args.Count - 2)
+						currentRace.Name += " ";
 				}
 				if (currentRace.Name.Length <= 3)
 				{
@@ -182,7 +182,7 @@ namespace RaceClient
 					currentRace.Name = "";
 					return;
 				}
-				if (currentRace.Name.Length >= 20)
+				if (currentRace.Name.Length >= 40)
 				{
 					SendChatMessage("Race name too long", 255, 0, 0);
 					currentRace.Name = "";
@@ -352,6 +352,7 @@ namespace RaceClient
 					return;
 				}
 				TriggerServerEvent("serverUnloadRace");
+				TriggerServerEvent("serverLoadXml", "", false);
 			}), false);
 			RegisterCommand("load", new Action<int, List<object>, string>((source, args, raw) =>
 			{
@@ -361,24 +362,24 @@ namespace RaceClient
 					return;
 				}
 
-				string name = "";
-				foreach (var item in args)
+				if (args.Count != 1)
 				{
-					name += (string)item;
-				}
-				if (name.Length <= 3)
-				{
-					SendChatMessage("Race name too short", 255, 0, 0);
-					name = "";
+					SendChatMessage("Invalid number of arguments!", 255, 0, 0);
 					return;
 				}
-				if (name.Length >= 20)
+				string code = (string)args[0];
+				if (code.Length <= 3)
 				{
-					SendChatMessage("Race name too long", 255, 0, 0);
-					name = "";
+					SendChatMessage("Race code too short", 255, 0, 0);
 					return;
 				}
-				TriggerServerEvent("serverLoadRace", name);
+				if (code.Length >= 30)
+				{
+					SendChatMessage("Race code too long", 255, 0, 0);
+					return;
+				}
+				TriggerServerEvent("serverLoadRace", code);
+				TriggerServerEvent("serverLoadXml", currentRace.Code, true);
 			}), false);
 			RegisterCommand("carspawn", new Action<int, List<object>, string>(async (source, args, raw) =>
 			{
@@ -575,20 +576,20 @@ namespace RaceClient
 		{
 			SendNuiMessage(jsonData);
 		}
-		[EventHandler("clientStreamObjects")]
-		private void OnClientStreamObjects(string resName, bool isStreamed)
-		{
-			if (isStreamed)
-			{
-				RequestIpl(resName);
-				SendChatMessage($"Adding Stream {resName}", 255, 0, 0);
-			}
-			else
-			{
-				RemoveIpl(resName);
-				SendChatMessage($"Removing Stream {resName}", 255, 0, 0);
-			}
-		}
+		//[EventHandler("clientStreamObjects")]
+		//private void OnClientStreamObjects(string resName, bool isStreamed)
+		//{
+		//	if (isStreamed)
+		//	{
+		//		RequestIpl(resName);
+		//		SendChatMessage($"Adding Stream {resName}", 255, 0, 0);
+		//	}
+		//	else
+		//	{
+		//		RemoveIpl(resName);
+		//		SendChatMessage($"Removing Stream {resName}", 255, 0, 0);
+		//	}
+		//}
 		[EventHandler("clientUnloadRace")]
 		private void OnClientUnloadRace()
 		{
@@ -621,12 +622,11 @@ namespace RaceClient
 		private void OnClientLoadRace(string jsonData)
 		{
 			OnClientUnloadRace();
-			RequestIpl(currentRace.Code);
+			//RequestIpl(currentRace.Code);
+
 			currentRace = JsonConvert.DeserializeObject<RaceClass>(jsonData);
 			checkpoints = currentRace.Checkpoints;
 			spawnpoints = currentRace.Spawnpoints;
-			//CitizenFX.Core.ClientScript.
-			//CitizenFX.Core.World.CreateCheckpoint();
 			for (int i = 0; i < checkpoints.Count; i++)
 			{
 				// Handle "Point to" Logic
@@ -653,24 +653,35 @@ namespace RaceClient
 			if (!string.IsNullOrEmpty(currentRace.Time))
 				NetworkOverrideClockTime(int.Parse(currentRace.Time), 00, 00);
 			SendNuiMessage(JsonConvert.SerializeObject(currentRace));
+
 		}
 		[EventHandler("clientLoadXml")]
-		private void OnClientLoadXml(string jsonData, bool isStreamed)
+		private void OnClientLoadXml(string jsonData, bool active)
 		{
-			List<MapClass> mapObjects = JsonConvert.DeserializeObject<List<MapClass>>(jsonData);
+			if (mapObjects.Count > 0)
+			{
+				for (int i = 0; i < objs.Count; i++)
+				{
+					int j = objs[i];
+					DeleteObject(ref j);
+				}
+				mapObjects = new List<MapClass>();
+				objs = new List<int>();
+			}
+			mapObjects = JsonConvert.DeserializeObject<List<MapClass>>(jsonData);
 			SendChatMessage("this", 255, 0, 0);
-			if (isStreamed) {
+			if (active) {
 				foreach (var obj in mapObjects)
 				{
-					RequestModel(obj.Hash);
-					objs.Add(CreateObject(Convert.ToInt32(obj.Hash), obj.Position.X, obj.Position.Y, obj.Position.Z, false, false, obj.Door));
+					RequestModel((uint)obj.Hash);
+					//objs.Add(CreateObject(Convert.ToInt32(obj.Hash), obj.Position.X, obj.Position.Y, obj.Position.Z, false, false, obj.Door));
+					objs.Add(CreateObjectNoOffset((uint)obj.Hash, obj.Position.X, obj.Position.Y, obj.Position.Z, false, false, obj.Door));
+					//PlaceObjectOnGroundProperly(objs[objs.Count - 1]);
 					SetEntityRotation(objs[objs.Count-1], obj.Rotation.X, obj.Rotation.Y, obj.Rotation.Z, 2, true);
 					SetEntityQuaternion(objs[objs.Count - 1], obj.Quaternion.X, obj.Quaternion.Y, obj.Quaternion.Z, obj.Quaternion.W);
 					FreezeEntityPosition(objs[objs.Count - 1], true);
 				}
 			} else {
-
-				//DetachEntity(
 				for (int i = 0; i < objs.Count; i++)
 				{
 					int j = objs[i];

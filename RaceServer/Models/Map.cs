@@ -88,7 +88,7 @@ namespace RaceServer.models
 
 		private MapMapObjectRotation rotationField;
 
-		private uint hashField;
+		private double hashField;
 
 		private bool dynamicField;
 
@@ -136,7 +136,7 @@ namespace RaceServer.models
 		}
 
 		/// <remarks/>
-		public uint Hash
+		public double Hash
 		{
 			get
 			{
@@ -398,7 +398,7 @@ namespace RaceServer.models
 
 		private MapRemoveFromWorldMapObjectRotation rotationField;
 
-		private uint hashField;
+		private double hashField;
 
 		private bool dynamicField;
 
@@ -448,7 +448,7 @@ namespace RaceServer.models
 		}
 
 		/// <remarks/>
-		public uint Hash
+		public double Hash
 		{
 			get
 			{
