@@ -9,6 +9,17 @@ namespace RaceClient.models
 {
 	public class RaceClass
 	{
+		public RaceClass()
+		{
+			Name = "";
+			Code = "";
+			Car = "";
+			Laps = 0;
+			Time = "";
+			Weather = "";
+			Checkpoints = new List<CheckpointClass>();
+			Spawnpoints = new List<SpawnpointClass>();
+		}
 		public string Name { get; set; }
 		public string Code { get; set; }
 		public string Car { get; set; }

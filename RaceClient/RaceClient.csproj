@@ -48,6 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonClass.cs" />
+    <Compile Include="CreateModeClass.cs" />
     <Compile Include="Models\CheckpointClass.cs" />
     <Compile Include="Models\CheckpointConfigClass.cs" />
     <Compile Include="Models\MapClass.cs" />

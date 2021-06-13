@@ -8,6 +8,16 @@ namespace RaceClient.models
 {
 	public class CheckpointConfigClass
 	{
+		public CheckpointConfigClass()
+		{
+			// Default values;
+			Radius = 15;
+			Type = 1;
+			Red = 240;
+			Green = 100;
+			Blue = 0;
+			Alpha = 140;
+		}
 		public float Radius { get; set; }
 		public int Type { get; set; }
 		public int Red { get; set; }
