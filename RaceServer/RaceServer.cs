@@ -107,11 +107,6 @@ namespace RaceServer
 		{
 			TriggerClientEvent("clientUnloadRace");
 		}
-		//[EventHandler("serverStreamObjects")]
-		//private void OnServerStreamObjects(string resName, bool isStreamed)
-		//{
-		//    TriggerClientEvent("clientStreamObjects", resName, isStreamed);
-		//}
 		private string ServerLoadXml(string mapName)
 		{
 			List<MapClass> mapObjects = new List<MapClass>();

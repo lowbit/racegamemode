@@ -69,17 +69,6 @@ namespace RaceClient
 			{
 				FreezeEntityPosition(GetVehiclePedIsUsing(Game.PlayerPed.Handle), false);
 			}), false);
-			RegisterCommand("stream", new Action<int, List<object>, string>(async (source, args, raw) =>
-			{
-				if (args.Count == 1)
-				{
-					TriggerServerEvent("serverLoadXml", (string)args[0], true);
-				}
-			}), false);
-			RegisterCommand("unstream", new Action<int, List<object>, string>(async (source, args, raw) =>
-			{
-				TriggerServerEvent("serverLoadXml", "", false);
-			}), false);
 			RegisterCommand("spawnSpawnPoint", new Action<int, List<object>, string>((source, args, raw) =>
 			{
 				SpawnpointClass sp = new SpawnpointClass();
@@ -117,7 +106,6 @@ namespace RaceClient
 				}
 				TriggerServerEvent("serverRemoveSpawnpoint");
 			}), false);
-
 			RegisterCommand("name", new Action<int, List<object>, string>((source, args, raw) =>
 			{
 				currentRace.Name = "";
@@ -289,21 +277,6 @@ namespace RaceClient
 				}
 				TriggerServerEvent("serverLoadRace", code);
 			}), false);
-			//RegisterCommand("stream", new Action<int, List<object>, string>(async (source, args, raw) =>
-			//{
-			//	if (args.Count == 1)
-			//	{
-			//		TriggerServerEvent("serverStreamObjects", (string)args[0], true);
-			//	}
-			//}), false);
-			//RegisterCommand("unstream", new Action<int, List<object>, string>(async (source, args, raw) =>
-			//{
-			//	if (args.Count == 1)
-			//	{
-			//		TriggerServerEvent("serverStreamObjects", (string)args[0], false);
-			//	}
-			//}), false);
-			//
 		}
 		#endregion
 		#region Eventhandlers
@@ -312,6 +285,7 @@ namespace RaceClient
 		{
 			SendChatMessage("Checkpoint at X: " + pos.X + "Y: " + pos.Y + "Z: " + pos.Z, 255, 0, 0);
 			AddCheckpoint(pos.X, pos.Y, pos.Z, 0, 0, 0);
+			SendNuiMessage(JsonConvert.SerializeObject(currentRace));
 		}
 		[EventHandler("clientSpawnSpawnPoint")]
 		private void OnClientSpawnSpawnPoint(string jsonData)
@@ -319,6 +293,8 @@ namespace RaceClient
 			SpawnpointClass sp = JsonConvert.DeserializeObject<SpawnpointClass>(jsonData);
 			SendChatMessage("Spawnpoint at X: " + sp.Position.X + "Y: " + sp.Position.Y + "Z: " + sp.Position.Z, 0, 255, 0);
 			spawnpoints.Add(sp);
+			currentRace.Spawnpoints = spawnpoints;
+			SendNuiMessage(JsonConvert.SerializeObject(currentRace));
 		}
 		[EventHandler("moveNextSpawnpoint")]
 		private void OnMoveNextSpawnpoint()
@@ -347,6 +323,7 @@ namespace RaceClient
 			DeleteCheckpoint(currentCp.Handle);
 			checkpoints.Remove(currentCp);
 			currentRace.Checkpoints = checkpoints;
+			SendNuiMessage(JsonConvert.SerializeObject(currentRace));
 		}
 		[EventHandler("clientRemoveSpawnpoint")]
 		private void OnClientRemoveSpawnpoint()
@@ -354,6 +331,7 @@ namespace RaceClient
 			SpawnpointClass currentSp = spawnpoints[spawnpoints.Count - 1];
 			spawnpoints.Remove(currentSp);
 			currentRace.Spawnpoints = spawnpoints;
+			SendNuiMessage(JsonConvert.SerializeObject(currentRace));
 		}
 		[EventHandler("clientAfterSaveRace")]
 		private void OnClientAfterSaveRace()
@@ -365,20 +343,6 @@ namespace RaceClient
 		{
 			SendNuiMessage(jsonData);
 		}
-		//[EventHandler("clientStreamObjects")]
-		//private void OnClientStreamObjects(string resName, bool isStreamed)
-		//{
-		//	if (isStreamed)
-		//	{
-		//		RequestIpl(resName);
-		//		SendChatMessage($"Adding Stream {resName}", 255, 0, 0);
-		//	}
-		//	else
-		//	{
-		//		RemoveIpl(resName);
-		//		SendChatMessage($"Removing Stream {resName}", 255, 0, 0);
-		//	}
-		//}
 		[EventHandler("clientUnloadRace")]
 		private void OnClientUnloadRace()
 		{
