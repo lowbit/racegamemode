@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 
-namespace RaceServer.models
+namespace RaceClient.models
 {
-	public class RaceClass
+	public class RaceModel
 	{
-		public RaceClass()
+		public RaceModel()
 		{
 			Name = "";
 			Code = "";
@@ -17,8 +17,8 @@ namespace RaceServer.models
 			Laps = 0;
 			Time = "";
 			Weather = "";
-			Checkpoints = new List<CheckpointClass>();
-			Spawnpoints = new List<SpawnpointClass>();
+			Checkpoints = new List<CheckpointModel>();
+			Spawnpoints = new List<SpawnpointModel>();
 		}
 		public string Name { get; set; }
 		public string Code { get; set; }
@@ -27,7 +27,7 @@ namespace RaceServer.models
 		public int Laps { get; set; }
 		public string Time { get; set; }
 		public string Weather { get; set; }
-		public List<CheckpointClass> Checkpoints { get; set; }
-		public List<SpawnpointClass> Spawnpoints { get; set; }
+		public List<CheckpointModel> Checkpoints { get; set; }
+		public List<SpawnpointModel> Spawnpoints { get; set; }
 	}
 }

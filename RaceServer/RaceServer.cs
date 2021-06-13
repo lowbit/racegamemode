@@ -85,7 +85,7 @@ namespace RaceServer
 		[EventHandler("saveRace")]
 		private void OnSaveRace(string jsonData)
 		{
-			RaceClass newRace = JsonConvert.DeserializeObject<RaceClass>(jsonData);
+			RaceModel newRace = JsonConvert.DeserializeObject<RaceModel>(jsonData);
 
 			System.IO.File.WriteAllText($"resources/racegamemode/races/{newRace.Code}.json", jsonData);
 			TriggerClientEvent("clientAfterSaveRace");
@@ -109,7 +109,7 @@ namespace RaceServer
 		}
 		private string ServerLoadXml(string mapName)
 		{
-			List<MapClass> mapObjects = new List<MapClass>();
+			List<MapModel> mapObjects = new List<MapModel>();
 			if (!string.IsNullOrWhiteSpace(mapName))
 			{
 				XmlSerializer reader = new XmlSerializer(typeof(Map));
@@ -121,7 +121,7 @@ namespace RaceServer
 					file.Close();
 					foreach (var item in map.Objects)
 					{
-						MapClass mc = new MapClass();
+						MapModel mc = new MapModel();
 						mc.Door = item.Door;
 						mc.Dynamic = item.Dynamic;
 						mc.Hash = item.Hash;

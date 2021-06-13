@@ -15,34 +15,34 @@ namespace RaceClient
 		{
 			"EXTRASUNNY", "CLEAR", "NEUTRAL", "SMOG", "FOGGY", "CLOUDS", "OVERCAST", "CLEARING", "RAIN", "THUNDER", "BLIZZARD", "SNOW", "SNOWLIGHT", "XMAS", "HALLOWEEN"
 		};
-		public RaceClass currentRace;
+		public RaceModel currentRace;
 		public List<Blip> checkpointBlips;
-		public List<CheckpointClass> checkpoints;
-		public List<SpawnpointClass> spawnpoints;
+		public List<CheckpointModel> checkpoints;
+		public List<SpawnpointModel> spawnpoints;
 		public List<int> objs;
-		List<MapClass> mapObjects;
-		public CheckpointConfigClass checkpointConfig;
+		List<MapModel> mapObjects;
+		public CheckpointConfigModel checkpointConfig;
 		public CreateModeClass()
 		{
-			currentRace = new RaceClass();
-			checkpointConfig = new CheckpointConfigClass();
+			currentRace = new RaceModel();
+			checkpointConfig = new CheckpointConfigModel();
 			checkpointBlips = new List<Blip>();
-			checkpoints = new List<CheckpointClass>();
-			spawnpoints = new List<SpawnpointClass>();
+			checkpoints = new List<CheckpointModel>();
+			spawnpoints = new List<SpawnpointModel>();
 			objs = new List<int>();
-			mapObjects = new List<MapClass>();
+			mapObjects = new List<MapModel>();
 			Tick += OnTick;
 		}
 		[EventHandler("clientCreateState")]
 		public void OnclientCreateState()
 		{
-			currentRace = new RaceClass();
-			checkpointConfig = new CheckpointConfigClass();
+			currentRace = new RaceModel();
+			checkpointConfig = new CheckpointConfigModel();
 			checkpointBlips = new List<Blip>();
-			checkpoints = new List<CheckpointClass>();
-			spawnpoints = new List<SpawnpointClass>();
+			checkpoints = new List<CheckpointModel>();
+			spawnpoints = new List<SpawnpointModel>();
 			objs = new List<int>();
-			mapObjects = new List<MapClass>();
+			mapObjects = new List<MapModel>();
 			RegisterCommands();
 			UpdateCreateRaceInfo();
 		}
@@ -50,7 +50,7 @@ namespace RaceClient
 		public void OnclientCreateStateUnload()
 		{
 			OnClientUnloadRace();
-			checkpointConfig = new CheckpointConfigClass();
+			checkpointConfig = new CheckpointConfigModel();
 		}
 		private async Task OnTick()
 		{
@@ -71,7 +71,7 @@ namespace RaceClient
 			}), false);
 			RegisterCommand("spawnSpawnPoint", new Action<int, List<object>, string>((source, args, raw) =>
 			{
-				SpawnpointClass sp = new SpawnpointClass();
+				SpawnpointModel sp = new SpawnpointModel();
 				if (Game.PlayerPed.IsInVehicle())
 				{
 					sp.Heading = Game.PlayerPed.CurrentVehicle.Heading;
@@ -290,7 +290,7 @@ namespace RaceClient
 		[EventHandler("clientSpawnSpawnPoint")]
 		private void OnClientSpawnSpawnPoint(string jsonData)
 		{
-			SpawnpointClass sp = JsonConvert.DeserializeObject<SpawnpointClass>(jsonData);
+			SpawnpointModel sp = JsonConvert.DeserializeObject<SpawnpointModel>(jsonData);
 			SendChatMessage("Spawnpoint at X: " + sp.Position.X + "Y: " + sp.Position.Y + "Z: " + sp.Position.Z, 0, 255, 0);
 			spawnpoints.Add(sp);
 			currentRace.Spawnpoints = spawnpoints;
@@ -314,7 +314,7 @@ namespace RaceClient
 		[EventHandler("clientRemoveCheckpoint")]
 		private void OnClientRemoveCheckpoint()
 		{
-			CheckpointClass currentCp = checkpoints[checkpoints.Count - 1];
+			CheckpointModel currentCp = checkpoints[checkpoints.Count - 1];
 			foreach (Blip b in checkpointBlips)
 			{
 				if (b.Handle == currentCp.Blip)
@@ -328,7 +328,7 @@ namespace RaceClient
 		[EventHandler("clientRemoveSpawnpoint")]
 		private void OnClientRemoveSpawnpoint()
 		{
-			SpawnpointClass currentSp = spawnpoints[spawnpoints.Count - 1];
+			SpawnpointModel currentSp = spawnpoints[spawnpoints.Count - 1];
 			spawnpoints.Remove(currentSp);
 			currentRace.Spawnpoints = spawnpoints;
 			SendNuiMessage(JsonConvert.SerializeObject(currentRace));
@@ -361,9 +361,9 @@ namespace RaceClient
 					DeleteCheckpoint(item.Handle);
 				}
 			}
-			currentRace = new RaceClass();
-			checkpoints = new List<CheckpointClass>();
-			spawnpoints = new List<SpawnpointClass>();
+			currentRace = new RaceModel();
+			checkpoints = new List<CheckpointModel>();
+			spawnpoints = new List<SpawnpointModel>();
 			SendNuiMessage(JsonConvert.SerializeObject(currentRace));
 			ClientUnloadXml();
 		}
@@ -373,7 +373,7 @@ namespace RaceClient
 			OnClientUnloadRace();
 			if (jsonData != "")
 			{
-				currentRace = JsonConvert.DeserializeObject<RaceClass>(jsonData);
+				currentRace = JsonConvert.DeserializeObject<RaceModel>(jsonData);
 				checkpoints = currentRace.Checkpoints;
 				spawnpoints = currentRace.Spawnpoints;
 				for (int i = 0; i < checkpoints.Count; i++)
@@ -411,7 +411,7 @@ namespace RaceClient
 		}
 		private void ClientLoadXml(string objectsData)
 		{
-			mapObjects = JsonConvert.DeserializeObject<List<MapClass>>(objectsData);
+			mapObjects = JsonConvert.DeserializeObject<List<MapModel>>(objectsData);
 			if (mapObjects.Count == 0)
 			{
 				SendChatMessage("Race does not have XML file", 255, 0, 0);
@@ -437,14 +437,14 @@ namespace RaceClient
 					int j = objs[i];
 					DeleteObject(ref j);
 				}
-				mapObjects = new List<MapClass>();
+				mapObjects = new List<MapModel>();
 				objs = new List<int>();
 			}
 		}
 		#endregion
 		private void AddCheckpoint(float posX1, float posY1, float posZ1, float posX2, float posY2, float posZ2)
 		{
-			var cp = new CheckpointClass();
+			var cp = new CheckpointModel();
 			cp.ArrayPos = checkpoints.Count;
 			cp.Position = new Vector3(posX1, posY1, posZ1);
 			cp.NextPosition = new Vector3(posX2, posY2, posZ2);

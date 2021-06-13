@@ -7,12 +7,9 @@ using CitizenFX.Core;
 
 namespace RaceClient.models
 {
-	public class CheckpointClass
+	public class SpawnpointModel
 	{
 		public Vector3 Position { get; set; }
-		public Vector3 NextPosition { get; set; }
-		public int Handle { get; set; }
-		public int Blip { get; set; }
-		public int ArrayPos { get; set; }
+		public float Heading { get; set; }
 	}
 }

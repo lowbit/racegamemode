@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace RaceClient.models
 {
-	public class MapClass
+	public class MapModel
 	{
-		public MapClass()
+		public MapModel()
 		{
 			Position = new CoordinatePosition();
 			Rotation = new CoordinateRotation();

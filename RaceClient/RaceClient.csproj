@@ -50,13 +50,14 @@
   <ItemGroup>
     <Compile Include="CommonClass.cs" />
     <Compile Include="CreateModeClass.cs" />
-    <Compile Include="Models\CheckpointClass.cs" />
-    <Compile Include="Models\CheckpointConfigClass.cs" />
-    <Compile Include="Models\MapClass.cs" />
-    <Compile Include="Models\RaceClass.cs" />
-    <Compile Include="Models\SpawnpointClass.cs" />
+    <Compile Include="Models\CheckpointModel.cs" />
+    <Compile Include="Models\CheckpointConfigModel.cs" />
+    <Compile Include="Models\MapModel.cs" />
+    <Compile Include="Models\RaceModel.cs" />
+    <Compile Include="Models\SpawnpointModel.cs" />
     <Compile Include="RaceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RaceModeClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

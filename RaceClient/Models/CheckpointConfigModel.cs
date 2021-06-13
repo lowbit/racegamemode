@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace RaceClient.models
 {
-	public class CheckpointConfigClass
+	public class CheckpointConfigModel
 	{
-		public CheckpointConfigClass()
+		public CheckpointConfigModel()
 		{
 			// Default values;
 			Radius = 15;
