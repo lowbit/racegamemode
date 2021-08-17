@@ -15,6 +15,7 @@ namespace RaceServer.models
 			Quaternion = new Quaternion();
 		}
 		public double Hash { get; set; }
+		public int Color { get; set; }
 		public bool Door { get; set; }
 		public bool Dynamic { get; set; }
 		public CoordinatePosition Position { get; set; }

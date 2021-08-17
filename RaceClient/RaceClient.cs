@@ -63,15 +63,11 @@ namespace RaceClient
 			}), false);
 			RegisterCommand("race", new Action<int, List<object>, string>((source, args, raw) =>
 			{
-				TriggerServerEvent("serverStateChange", state.RACING.ToString());
+				TriggerServerEvent("serverStartRaceMode", args[0]);
 			}), false);
 			RegisterCommand("create", new Action<int, List<object>, string>((source, args, raw) =>
 			{
-				TriggerServerEvent("serverStateChange", state.CREATING.ToString());
-			}), false);
-			RegisterCommand("wait2", new Action<int, List<object>, string>((source, args, raw) =>
-			{
-				TriggerServerEvent("serverStateChange", state.WAITING.ToString());
+				TriggerServerEvent("serverStartCreateMode");
 			}), false);
 		}
 		private void UpdatePlayerBlips()
@@ -102,48 +98,24 @@ namespace RaceClient
 			SendChatMessage("state: " + currentState, 255, 0, 0);
 			SendNuiMessage(JsonConvert.SerializeObject(new { type = "state", text = currentState }));
 		}
-		[EventHandler("clientStateChange")]
-		private void OnClientStateChange(string newState)
+		[EventHandler("clientNewStatePrepare")]
+		private void NewStatePrepare(string newState)
 		{
-			if (newState != currentState)
+			if (currentState == state.CREATING.ToString())
 			{
-				if (currentState == state.CREATING.ToString())
-				{
-					TriggerEvent("clientCreateStateUnload");
-				}
-				else if (currentState == state.RACING.ToString())
-				{
-
-				}
-				else if (currentState == state.VOTING.ToString())
-				{
-
-				}
-				else if (currentState == state.WAITING.ToString())
-				{
-
-				}
-
-				if (newState == state.CREATING.ToString())
-				{
-					TriggerEvent("clientCreateState");
-				}
-				else if (newState == state.RACING.ToString())
-				{
-
-				}
-				else if (newState == state.VOTING.ToString())
-				{
-
-				}
-				else if (newState == state.WAITING.ToString())
-				{
-
-				}
-				currentState = newState;
-				SendChatMessage("Current state: " + currentState, 0, 255, 0);
-				SendNuiMessage(JsonConvert.SerializeObject(new { type = "state", text = currentState }));
+				TriggerEvent("clientCreateStateUnload");
 			}
+			else if (currentState == state.RACING.ToString())
+			{
+				TriggerEvent("clientRaceStateUnload");
+			}
+			else if (currentState == state.VOTING.ToString())
+			{//todo
+				TriggerEvent("clientVoteStateUnload");
+			}
+			currentState = newState;
+			SendChatMessage("Current state: " + currentState, 0, 255, 0);
+			SendNuiMessage(JsonConvert.SerializeObject(new { type = "state", text = currentState }));
 		}
 		[EventHandler("receiveMsg")]
 		private void OnReceiveMsg(string msg)

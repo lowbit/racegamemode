@@ -19,6 +19,7 @@ namespace RaceServer.models
 			Weather = "";
 			Checkpoints = new List<CheckpointModel>();
 			Spawnpoints = new List<SpawnpointModel>();
+			MapModels = new List<MapModel>();
 		}
 		public string Name { get; set; }
 		public string Code { get; set; }
@@ -29,5 +30,6 @@ namespace RaceServer.models
 		public string Weather { get; set; }
 		public List<CheckpointModel> Checkpoints { get; set; }
 		public List<SpawnpointModel> Spawnpoints { get; set; }
+		public List<MapModel> MapModels { get; set; }
 	}
 }

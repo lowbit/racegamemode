@@ -51,6 +51,8 @@
     <Compile Include="Models\CheckpointModel.cs" />
     <Compile Include="Models\MapModel.cs" />
     <Compile Include="Models\Map.cs" />
+    <Compile Include="Models\CheckpointEnter.cs" />
+    <Compile Include="Models\RaceState.cs" />
     <Compile Include="Models\RaceModel.cs" />
     <Compile Include="Models\SpawnpointModel.cs" />
     <Compile Include="RaceServer.cs" />

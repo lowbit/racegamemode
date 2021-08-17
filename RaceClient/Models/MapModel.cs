@@ -17,9 +17,11 @@ namespace RaceClient.models
 		public double Hash { get; set; }
 		public bool Door { get; set; }
 		public bool Dynamic { get; set; }
+		public int Color { get; set; }
 		public CoordinatePosition Position { get; set; }
 		public CoordinateRotation Rotation { get; set; }
 		public Quaternion Quaternion { get; set; }
+		public int ObjectId { get; set; }
 	}
 	public class CoordinatePosition
 	{

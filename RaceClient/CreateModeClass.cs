@@ -19,7 +19,6 @@ namespace RaceClient
 		public List<Blip> checkpointBlips;
 		public List<CheckpointModel> checkpoints;
 		public List<SpawnpointModel> spawnpoints;
-		public List<int> objs;
 		List<MapModel> mapObjects;
 		public CheckpointConfigModel checkpointConfig;
 		public CreateModeClass()
@@ -29,7 +28,6 @@ namespace RaceClient
 			checkpointBlips = new List<Blip>();
 			checkpoints = new List<CheckpointModel>();
 			spawnpoints = new List<SpawnpointModel>();
-			objs = new List<int>();
 			mapObjects = new List<MapModel>();
 			Tick += OnTick;
 		}
@@ -41,7 +39,6 @@ namespace RaceClient
 			checkpointBlips = new List<Blip>();
 			checkpoints = new List<CheckpointModel>();
 			spawnpoints = new List<SpawnpointModel>();
-			objs = new List<int>();
 			mapObjects = new List<MapModel>();
 			RegisterCommands();
 			UpdateCreateRaceInfo();
@@ -270,12 +267,33 @@ namespace RaceClient
 					SendChatMessage("Race code too short", 255, 0, 0);
 					return;
 				}
-				if (code.Length >= 30)
+				if (code.Length >= 100)
 				{
 					SendChatMessage("Race code too long", 255, 0, 0);
 					return;
 				}
 				TriggerServerEvent("serverLoadRace", code);
+			}), false);
+			RegisterCommand("generate", new Action<int, List<object>, string>((source, args, raw) =>
+			{
+                if (args.Count != 1)
+                {
+                    SendChatMessage("Invalid number of arguments!", 255, 0, 0);
+                    return;
+                }
+                string code = (string)args[0];
+                if (code.Length <= 3)
+                {
+                    SendChatMessage("Race code too short", 255, 0, 0);
+                    return;
+                }
+                if (code.Length >= 100)
+                {
+                    SendChatMessage("Race code too long", 255, 0, 0);
+                    return;
+                }
+                SendChatMessage("1", 255, 0, 0);
+                TriggerServerEvent("generateGTARace", code);
 			}), false);
 		}
 		#endregion
@@ -365,15 +383,15 @@ namespace RaceClient
 			checkpoints = new List<CheckpointModel>();
 			spawnpoints = new List<SpawnpointModel>();
 			SendNuiMessage(JsonConvert.SerializeObject(currentRace));
-			ClientUnloadXml();
+			ClientUnloadXml(ref mapObjects);
 		}
 		[EventHandler("clientLoadRace")]
-		private void OnClientLoadRace(string jsonData, string objectsData)
+		private void OnClientLoadRace(string raceData, string objectsData)
 		{
 			OnClientUnloadRace();
-			if (jsonData != "")
+			if (raceData != "")
 			{
-				currentRace = JsonConvert.DeserializeObject<RaceModel>(jsonData);
+				currentRace = JsonConvert.DeserializeObject<RaceModel>(raceData);
 				checkpoints = currentRace.Checkpoints;
 				spawnpoints = currentRace.Spawnpoints;
 				for (int i = 0; i < checkpoints.Count; i++)
@@ -382,10 +400,10 @@ namespace RaceClient
 					if (i == checkpoints.Count - 1 && currentRace.Laps > 0)
 					{
 						checkpoints[i].NextPosition = checkpoints[0].Position;
-						checkpoints[i].Handle = CreateCheckpoint(4, checkpoints[i].Position.X, checkpoints[i].Position.Y, checkpoints[i].Position.Z - 10, checkpoints[i].NextPosition.X, checkpoints[i].NextPosition.Y, checkpoints[i].NextPosition.Z, checkpointConfig.Radius, checkpointConfig.Red, checkpointConfig.Green, checkpointConfig.Blue, checkpointConfig.Alpha, 0);
+						checkpoints[i].Handle = CreateCheckpoint(4, checkpoints[i].Position.X, checkpoints[i].Position.Y, checkpoints[i].Position.Z, checkpoints[i].NextPosition.X, checkpoints[i].NextPosition.Y, checkpoints[i].NextPosition.Z, checkpointConfig.Radius, checkpointConfig.Red, checkpointConfig.Green, checkpointConfig.Blue, checkpointConfig.Alpha, 0);
 					}
 					else
-						checkpoints[i].Handle = CreateCheckpoint(checkpointConfig.Type, checkpoints[i].Position.X, checkpoints[i].Position.Y, checkpoints[i].Position.Z - 10, checkpoints[i].NextPosition.X, checkpoints[i].NextPosition.Y, checkpoints[i].NextPosition.Z, checkpointConfig.Radius, checkpointConfig.Red, checkpointConfig.Green, checkpointConfig.Blue, checkpointConfig.Alpha, 0);
+						checkpoints[i].Handle = CreateCheckpoint(checkpointConfig.Type, checkpoints[i].Position.X, checkpoints[i].Position.Y, checkpoints[i].Position.Z, checkpoints[i].NextPosition.X, checkpoints[i].NextPosition.Y, checkpoints[i].NextPosition.Z, checkpointConfig.Radius, checkpointConfig.Red, checkpointConfig.Green, checkpointConfig.Blue, checkpointConfig.Alpha, 0);
 
 					Blip blip = World.CreateBlip(checkpoints[i].Position);
 					blip.Sprite = BlipSprite.Standard;
@@ -407,48 +425,60 @@ namespace RaceClient
 			{
 				SendChatMessage("Race does not exist", 255, 0, 0);
 			}
-			ClientLoadXml(objectsData);
+			mapObjects = ClientLoadXml(objectsData);
 		}
-		private void ClientLoadXml(string objectsData)
+
+		[EventHandler("clientGenerateRace")]
+		private void OnClientGenerateRace(string raceModel)
 		{
-			mapObjects = JsonConvert.DeserializeObject<List<MapModel>>(objectsData);
-			if (mapObjects.Count == 0)
+			SendChatMessage("3", 255, 0, 0);
+			OnClientUnloadRace();
+			if (raceModel != "")
 			{
-				SendChatMessage("Race does not have XML file", 255, 0, 0);
+				currentRace = JsonConvert.DeserializeObject<RaceModel>(raceModel);
+				checkpoints = currentRace.Checkpoints;
+				spawnpoints = currentRace.Spawnpoints;
+				for (int i = 0; i < checkpoints.Count; i++)
+				{
+					// Handle "Point to" Logic
+					if (i == checkpoints.Count - 1 && currentRace.Laps > 0)
+					{
+						checkpoints[i].NextPosition = checkpoints[0].Position;
+						checkpoints[i].Handle = CreateCheckpoint(4, checkpoints[i].Position.X, checkpoints[i].Position.Y, checkpoints[i].Position.Z, checkpoints[i].NextPosition.X, checkpoints[i].NextPosition.Y, checkpoints[i].NextPosition.Z, checkpointConfig.Radius, checkpointConfig.Red, checkpointConfig.Green, checkpointConfig.Blue, checkpointConfig.Alpha, 0);
+					}
+					else
+						checkpoints[i].Handle = CreateCheckpoint(checkpointConfig.Type, checkpoints[i].Position.X, checkpoints[i].Position.Y, checkpoints[i].Position.Z, checkpoints[i].NextPosition.X, checkpoints[i].NextPosition.Y, checkpoints[i].NextPosition.Z, checkpointConfig.Radius, checkpointConfig.Red, checkpointConfig.Green, checkpointConfig.Blue, checkpointConfig.Alpha, 0);
+
+					Blip blip = World.CreateBlip(checkpoints[i].Position);
+					blip.Sprite = BlipSprite.Standard;
+					blip.Name = "Race Blip";
+					blip.Color = BlipColor.Blue;
+					blip.IsFriendly = true;
+					blip.NumberLabel = i + 1;
+					checkpoints[i].Blip = blip.Handle;
+					checkpointBlips.Add(blip);
+				}
+				/*if (!string.IsNullOrEmpty(currentRace.Weather))
+					SetWeatherTypeOvertimePersist(currentRace.Weather, 6);
+
+				if (!string.IsNullOrEmpty(currentRace.Time))
+					NetworkOverrideClockTime(int.Parse(currentRace.Time), 00, 00);*/
+				SendNuiMessage(JsonConvert.SerializeObject(currentRace));
 			}
 			else
 			{
-				foreach (var obj in mapObjects)
-				{
-					RequestModel((uint)obj.Hash);
-					objs.Add(CreateObjectNoOffset((uint)obj.Hash, obj.Position.X, obj.Position.Y, obj.Position.Z, false, false, obj.Door));
-					SetEntityRotation(objs[objs.Count - 1], obj.Rotation.X, obj.Rotation.Y, obj.Rotation.Z, 2, true);
-					SetEntityQuaternion(objs[objs.Count - 1], obj.Quaternion.X, obj.Quaternion.Y, obj.Quaternion.Z, obj.Quaternion.W);
-					FreezeEntityPosition(objs[objs.Count - 1], true);
-				}
+				SendChatMessage("Race does not exist", 255, 0, 0);
 			}
-		}
-		private void ClientUnloadXml()
-		{
-			if (mapObjects.Count > 0)
-			{
-				for (int i = 0; i < objs.Count; i++)
-				{
-					int j = objs[i];
-					DeleteObject(ref j);
-				}
-				mapObjects = new List<MapModel>();
-				objs = new List<int>();
-			}
+			mapObjects = ClientLoadXml(JsonConvert.SerializeObject(currentRace.MapModels), true);
 		}
 		#endregion
 		private void AddCheckpoint(float posX1, float posY1, float posZ1, float posX2, float posY2, float posZ2)
 		{
 			var cp = new CheckpointModel();
 			cp.ArrayPos = checkpoints.Count;
-			cp.Position = new Vector3(posX1, posY1, posZ1);
+			cp.Position = new Vector3(posX1, posY1, posZ1 - 10);
 			cp.NextPosition = new Vector3(posX2, posY2, posZ2);
-			cp.Handle = CreateCheckpoint(checkpointConfig.Type, cp.Position.X, cp.Position.Y, cp.Position.Z - 10, cp.NextPosition.X, cp.NextPosition.Y, cp.NextPosition.Z, checkpointConfig.Radius, checkpointConfig.Red, checkpointConfig.Green, checkpointConfig.Blue, checkpointConfig.Alpha, 0);
+			cp.Handle = CreateCheckpoint(checkpointConfig.Type, cp.Position.X, cp.Position.Y, cp.Position.Z, cp.NextPosition.X, cp.NextPosition.Y, cp.NextPosition.Z, checkpointConfig.Radius, checkpointConfig.Red, checkpointConfig.Green, checkpointConfig.Blue, checkpointConfig.Alpha, 0);
 			if (checkpoints.Count >= 1)
 			{
 				checkpoints[checkpoints.Count - 1].NextPosition = cp.Position;
